@@ -49,13 +49,16 @@ for page in np.arange(1, int(last_page)+1):
     url = 'https://www.datacamp.com/community/tutorials?page=2' + str(page)
     html = urlopen(url)
     soup = BeautifulSoup(html, 'html.parser')
-    tag.append([i.text for i in soup.find_all(class_='jsx-1764811326 title')])
-    title.append([i.text for i in soup.find_all(class_='jsx-379356511 blue')])
-    link.append(i.text for i in soup.find_all('href'))
-    description.append([i.text for i in soup.find_all(class_='jsx-379356511 blocText description')])
-    author.append([i.text for i in soup.find_all(class_='jsx-566588255 name')])
-    date.append([i.text for i in soup.find_all(class_='jsx-566588255 date')])
-    upvotes.append([i.text for i in soup.find_all(class_='jsx-1972554161 count')])
+    tag.append([i.text for i in soup.find_all(
+        class_='jsx-1764811326 Tag')]) 
+    title.append([i.text for i in soup.find_all(class_='jsx-379356511 blue')]) #ok
+    description.append([i.text for i in soup.find_all(class_='jsx-379356511 blocText description')])#ok
+    author.append([i.text for i in soup.find_all(class_='jsx-566588255 name')])#ok
+    date.append([i.text for i in soup.find_all(class_='jsx-566588255 date')])#ok
+    upvotes.append([i.text for i in soup.find_all(
+        class_='jsx-1972554161 voted')]) #ok
+    link.append(link.get('href') for link in soup.find_all('a', attrs={ re.compile("^href://")}))
+
 
 # unpack the list of lists using itertools pakage
 chain_link = itertools.chain.from_iterable(link)
@@ -74,8 +77,40 @@ chain_desc = itertools.chain.from_iterable(description)
 desc_flatted = list(chain_desc)
 
 chain_upvote = itertools.chain.from_iterable(upvotes)
-link_flatted = list(chain_upvote)
+upvote_flatted = list(chain_upvote)
 
 chain_date = itertools.chain.from_iterable(date)
-link_flatted = list(chain_date)
+date_flatted = list(chain_date)
 
+# save what we got on a csv file 
+print(len(link_flatted), len(title_flatted), len(tag_flatted), len(author_flatted), len(desc_flatted), len(upvote_flatted), len(date_flatted))
+# 0 67 156 67 67 134 67 -> have different array lengths
+
+# We can write a function to pad the shortest lists with empty elements
+
+def pad_dict_list(dict_list, padel):
+    lmax = 0
+    for lname in dict_list.keys():
+        lmax = max(lmax, len(dict_list[lname]))
+    for lname in dict_list.keys():
+        ll = len(dict_list[lname])
+        if ll < lmax:
+            dict_list[lname] += [padel] * (lmax - ll)
+    return dict_list
+
+
+tutorial = {
+    "title": title_flatted,
+    "tag": tag_flatted,
+    "description": desc_flatted,
+    "link": link_flatted,
+    "voting": upvote_flatted,
+    "author": author_flatted,
+    "date": date_flatted
+}
+
+new_list = pad_dict_list(tutorial, 0)
+# print(new_list)
+df  = pd.DataFrame(new_list)
+
+df.to_csv("/Users/salmaelshahawy/Desktop/Scrapping_best-tutorials-on-data-camp/tutorial_csv.csv", header = True, index = True)
