@@ -19,7 +19,7 @@ import itertools
 
 # specifiying the URL to scrape
 
-url = 'https://www.datacamp.com/community/tutorials?page=2'
+url = 'https://www.datacamp.com/community/tutorials'
 
 # we need to identify how many pages we can query 
 # we loop over and find all a-tags and return their number.
@@ -46,7 +46,8 @@ date = []
 upvotes = []
 
 for page in np.arange(1, int(last_page)+1):
-    url = 'https://www.datacamp.com/community/tutorials?page=2' + str(page)
+    base_url = 'https://www.datacamp.com'
+    url = 'https://www.datacamp.com/community/tutorials?page=' + str(page)
     html = urlopen(url)
     soup = BeautifulSoup(html, 'html.parser')
     tag.append([i.text for i in soup.find_all(
@@ -57,7 +58,7 @@ for page in np.arange(1, int(last_page)+1):
     date.append([i.text for i in soup.find_all(class_='jsx-566588255 date')])#ok
     upvotes.append([i.text for i in soup.find_all(
         class_='jsx-1972554161 voted')]) #ok
-    link.append(i.get('href') for i in soup.find_all(
+    link.append(base_url + i.get('href') for i in soup.find_all(
         'a', class_='jsx-379356511'))  # ok fetch - need to append to base url
 
     # for i in soup.findAll('a', attrs={'href': re.compile("^http://")}):
