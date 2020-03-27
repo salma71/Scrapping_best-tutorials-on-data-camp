@@ -57,10 +57,11 @@ for page in np.arange(1, int(last_page)+1):
     date.append([i.text for i in soup.find_all(class_='jsx-566588255 date')])#ok
     upvotes.append([i.text for i in soup.find_all(
         class_='jsx-1972554161 voted')]) #ok
-    # link.append(link.get('href') for link in soup.find_all('a', attrs={ re.compile("^href://")})) # needs fixation
+    link.append(i.get('href') for i in soup.find_all(
+        'a', class_='jsx-379356511'))  # ok fetch - need to append to base url
 
-    for i in soup.findAll('a', attrs={'href': re.compile("^http://")}):
-            link.append(i.get('href'))
+    # for i in soup.findAll('a', attrs={'href': re.compile("^http://")}):
+    #         link.append(i.get('href'))
 
 
 # unpack the list of lists using itertools pakage
