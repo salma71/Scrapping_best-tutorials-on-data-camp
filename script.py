@@ -57,7 +57,10 @@ for page in np.arange(1, int(last_page)+1):
     date.append([i.text for i in soup.find_all(class_='jsx-566588255 date')])#ok
     upvotes.append([i.text for i in soup.find_all(
         class_='jsx-1972554161 voted')]) #ok
-    link.append(link.get('href') for link in soup.find_all('a', attrs={ re.compile("^href://")})) # needs fixation
+    # link.append(link.get('href') for link in soup.find_all('a', attrs={ re.compile("^href://")})) # needs fixation
+
+    for i in soup.findAll('a', attrs={'href': re.compile("^http://")}):
+            link.append(i.get('href'))
 
 
 # unpack the list of lists using itertools pakage
@@ -84,11 +87,9 @@ date_flatted = list(chain_date)
 
 # save what we got on a csv file 
 print(len(link_flatted), len(title_flatted), len(tag_flatted), len(author_flatted), len(desc_flatted), len(upvote_flatted), len(date_flatted))
-# # 0 67 134 67 67 67 67 -> fetching unexistence tags -> need to make tag list to have the same length of other lists
+# 0 67 134 67 67 67 67 -> fetching unexistence tags -> need to make tag list to have the same length of other lists
 
-tags = tag_flatted[:len(title_flatted)]
-
-# # We can write a function to pad the shortest lists with empty elements
+# We can write a function to pad the shortest lists with empty elements
 
 def pad_dict_list(dict_list, padel):
     lmax = 0
@@ -103,7 +104,7 @@ def pad_dict_list(dict_list, padel):
 
 tutorial = {
     "title": title_flatted,
-    "tag": tags,
+    "tag": tag_flatted[:len(title_flatted)],
     "description": desc_flatted,
     "link": link_flatted,
     "voting": upvote_flatted,
