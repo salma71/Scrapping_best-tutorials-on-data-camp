@@ -50,14 +50,14 @@ for page in np.arange(1, int(last_page)+1):
     html = urlopen(url)
     soup = BeautifulSoup(html, 'html.parser')
     tag.append([i.text for i in soup.find_all(
-        class_='jsx-1764811326 Tag')]) 
+        class_='jsx-1764811326 Tag')])  #ok
     title.append([i.text for i in soup.find_all(class_='jsx-379356511 blue')]) #ok
     description.append([i.text for i in soup.find_all(class_='jsx-379356511 blocText description')])#ok
     author.append([i.text for i in soup.find_all(class_='jsx-566588255 name')])#ok
     date.append([i.text for i in soup.find_all(class_='jsx-566588255 date')])#ok
     upvotes.append([i.text for i in soup.find_all(
         class_='jsx-1972554161 voted')]) #ok
-    link.append(link.get('href') for link in soup.find_all('a', attrs={ re.compile("^href://")}))
+    link.append(link.get('href') for link in soup.find_all('a', attrs={ re.compile("^href://")})) # needs fixation
 
 
 # unpack the list of lists using itertools pakage
@@ -84,9 +84,11 @@ date_flatted = list(chain_date)
 
 # save what we got on a csv file 
 print(len(link_flatted), len(title_flatted), len(tag_flatted), len(author_flatted), len(desc_flatted), len(upvote_flatted), len(date_flatted))
-# 0 67 156 67 67 134 67 -> have different array lengths
+# # 0 67 134 67 67 67 67 -> fetching unexistence tags -> need to make tag list to have the same length of other lists
 
-# We can write a function to pad the shortest lists with empty elements
+tags = tag_flatted[:len(title_flatted)]
+
+# # We can write a function to pad the shortest lists with empty elements
 
 def pad_dict_list(dict_list, padel):
     lmax = 0
@@ -101,7 +103,7 @@ def pad_dict_list(dict_list, padel):
 
 tutorial = {
     "title": title_flatted,
-    "tag": tag_flatted,
+    "tag": tags,
     "description": desc_flatted,
     "link": link_flatted,
     "voting": upvote_flatted,
@@ -109,7 +111,7 @@ tutorial = {
     "date": date_flatted
 }
 
-new_list = pad_dict_list(tutorial, 0)
+new_list = pad_dict_list(tutorial, len(title_flatted))
 # print(new_list)
 df  = pd.DataFrame(new_list)
 
