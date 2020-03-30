@@ -139,3 +139,7 @@ tutorial = {
 df  = pd.DataFrame(tutorial)
 
 df.to_csv("/Users/salmaelshahawy/Desktop/Scrapping_best-tutorials-on-data-camp/tutorial_csv.csv", header = True, index = True)
+
+df.to_excel("/Users/salmaelshahawy/Desktop/Scrapping_best-tutorials-on-data-camp/tutorial_xls.xlsx", sheet_name='data_camp')
+
+
